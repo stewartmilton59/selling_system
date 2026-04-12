@@ -177,9 +177,3 @@ Edit `static/css/style.css` to modify the color scheme:
 - Database query optimization
 - Lazy loading images
 - Efficient pagination
-
-For support or questions, please contact: support@prosell.com
-
----
-
-Built with ❤️ using Django and Bootstrap
