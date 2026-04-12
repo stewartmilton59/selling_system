@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - ProSell{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="bg-primary text-white py-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="fw-bold mb-0">Dashboard</h1>
+            </div>
+            <div class="col-md-6">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 justify-content-md-end">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white">Home</a></li>
+                        <li class="breadcrumb-item active text-white-50" aria-current="page">Dashboard</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dashboard Section -->
+<section class="py-5">
+    <div class="container">
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-0 shadow-sm bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Total Orders</h6>
+                                <h3 class="fw-bold mb-0">{{ total_orders }}</h3>
+                            </div>
+                            <i class="bi bi-cart-check fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-0 shadow-sm bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Total Revenue</h6>
+                                <h3 class="fw-bold mb-0">${{ total_revenue|floatformat:2 }}</h3>
+                            </div>
+                            <i class="bi bi-currency-dollar fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-0 shadow-sm bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Total Products</h6>
+                                <h3 class="fw-bold mb-0">{{ total_products }}</h3>
+                            </div>
+                            <i class="bi bi-box-seam fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-0 shadow-sm bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Total Customers</h6>
+                                <h3 class="fw-bold mb-0">{{ total_customers }}</h3>
+                            </div>
+                            <i class="bi bi-people fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Recent Orders -->
+            <div class="col-lg-8 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold mb-0">Recent Orders</h5>
+                            <a href="/admin/sales/order/" class="btn btn-outline-primary btn-sm">View All</a>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Total</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in recent_orders %}
+                                        <tr>
+                                            <td>{{ order.order_id }}</td>
+                                            <td>{{ order.customer }}</td>
+                                            <td>
+                                                <span class="badge bg-{% if order.status == 'delivered' %}success{% elif order.status == 'cancelled' %}danger{% elif order.status == 'shipped' %}info{% else %}warning{% endif %}">
+                                                    {{ order.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td class="text-end">${{ order.total }}</td>
+                                            <td class="text-end">
+                                                <a href="/admin/sales/order/{{ order.id }}/change/" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="5" class="text-center">No orders yet</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Order Status -->
+            <div class="col-lg-4 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-4">Orders by Status</h5>
+                        
+                        {% for status in orders_by_status %}
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span>{{ status.status|title }}</span>
+                                <span class="badge bg-primary">{{ status.count }}</span>
+                            </div>
+                            <div class="progress mb-3" style="height: 8px;">
+                                <div class="progress-bar" role="progressbar" style="width: {% widthratio status.count total_orders 100 %}%"></div>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted">No data available</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Products -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-4">Top Selling Products</h5>
+                        
+                        <div class="row g-4">
+                            {% for product in top_products %}
+                                <div class="col-lg-2 col-md-4 col-6">
+                                    <div class="text-center">
+                                        <img src="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/100x100?text={{ product.name|urlencode }}{% endif %}" 
+                                             alt="{{ product.name }}" class="rounded mb-2" style="width: 100px; height: 100px; object-fit: cover;">
+                                        <h6 class="fw-bold text-truncate mb-1">{{ product.name }}</h6>
+                                        <p class="text-muted small mb-0">{{ product.total_sold|default:0 }} sold</p>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="col-12 text-center">
+                                    <p class="text-muted">No sales data available</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-4">Quick Actions</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="/admin/sales/product/add/" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-2"></i>Add Product
+                            </a>
+                            <a href="/admin/sales/category/add/" class="btn btn-outline-primary">
+                                <i class="bi bi-plus-circle me-2"></i>Add Category
+                            </a>
+                            <a href="/admin/sales/order/" class="btn btn-outline-primary">
+                                <i class="bi bi-list me-2"></i>Manage Orders
+                            </a>
+                            <a href="/admin/auth/user/" class="btn btn-outline-primary">
+                                <i class="bi bi-people me-2"></i>Manage Users
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

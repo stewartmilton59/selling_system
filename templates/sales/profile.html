@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - ProSell{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="bg-primary text-white py-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="fw-bold mb-0">My Profile</h1>
+            </div>
+            <div class="col-md-6">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 justify-content-md-end">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white">Home</a></li>
+                        <li class="breadcrumb-item active text-white-50" aria-current="page">Profile</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Profile Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="bi bi-person-circle display-1 text-primary"></i>
+                        </div>
+                        <h5 class="fw-bold mb-1">{{ user.get_full_name|default:user.username }}</h5>
+                        <p class="text-muted small mb-0">{{ user.email }}</p>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'profile' %}" class="list-group-item list-group-item-action active">
+                            <i class="bi bi-person me-2"></i>Profile
+                        </a>
+                        <a href="{% url 'order_history' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-box-seam me-2"></i>My Orders
+                        </a>
+                        <a href="{% url 'wishlist' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-heart me-2"></i>Wishlist
+                        </a>
+                        <a href="{% url 'password_reset' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-key me-2"></i>Change Password
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Form -->
+            <div class="col-lg-9">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-4">Personal Information</h5>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Phone Number</label>
+                                    {{ form.phone }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Country</label>
+                                    {{ form.country }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Address</label>
+                                    {{ form.address }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">City</label>
+                                    {{ form.city }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">State</label>
+                                    {{ form.state }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">ZIP Code</label>
+                                    {{ form.zip_code }}
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle me-2"></i>Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Recent Orders -->
+                <div class="card border-0 shadow-sm mt-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold mb-0">Recent Orders</h5>
+                            <a href="{% url 'order_history' %}" class="btn btn-outline-primary btn-sm">View All</a>
+                        </div>
+                        
+                        {% if orders %}
+                            <div class="table-responsive">
+                                <table class="table align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th class="text-end">Total</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in orders %}
+                                            <tr>
+                                                <td>{{ order.order_id }}</td>
+                                                <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                                <td>
+                                                    <span class="badge bg-{% if order.status == 'delivered' %}success{% elif order.status == 'cancelled' %}danger{% elif order.status == 'shipped' %}info{% else %}warning{% endif %}">
+                                                        {{ order.get_status_display }}
+                                                    </span>
+                                                </td>
+                                                <td class="text-end">${{ order.total }}</td>
+                                                <td class="text-end">
+                                                    <a href="{% url 'order_detail' order.order_id %}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted mb-0">No orders yet. <a href="{% url 'product_list' %}">Start shopping</a></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
