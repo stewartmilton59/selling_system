@@ -178,12 +178,6 @@ Edit `static/css/style.css` to modify the color scheme:
 - Lazy loading images
 - Efficient pagination
 
-## License
-
-This project is open-source and available for personal and commercial use.
-
-## Support
-
 For support or questions, please contact: support@prosell.com
 
 ---
