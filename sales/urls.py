@@ -23,6 +23,7 @@ urlpatterns = [
     
     # User Account
     path('register/', views.register, name='register'),
+    path('logout/', views.logout_view, name='logout'),
     path('profile/', views.profile, name='profile'),
     path('orders/', views.order_history, name='order_history'),
     path('orders/<str:order_id>/', views.order_detail, name='order_detail'),
