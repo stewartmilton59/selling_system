@@ -276,6 +276,13 @@ def register(request):
     return render(request, 'sales/register.html', {'form': form})
 
 
+def logout_view(request):
+    """Log out the user and redirect to home page."""
+    logout(request)
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('home')
+
+
 @login_required
 def profile(request):
     customer = get_or_create_customer(request.user)
